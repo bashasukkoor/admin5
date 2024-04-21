@@ -1,0 +1,23 @@
+#from os.path import abspath
+from pyspark.sql import SparkSession
+# Create spark session with hive enabled
+spark = SparkSession \
+    .builder \
+    .appName("SparkByExamples.com") \
+    .config("hive.metastore.uris", "thrift://localhost:9083") \
+    .config("spark.sql.warehouse.dir", "hdfs://localhost:54310/user/hive/warehouse") \
+    .enableHiveSupport() \
+    .getOrCreate()
+
+df = spark.read.csv("hdfs://localhost:54310/user/hduser/Retails/orders.csv", inferSchema='true', header='true')
+df.cache()
+df.show(5)
+df.createOrReplaceTempView("orders")
+df=spark.sql("""select * from orders""").show(5)
+
+#df.write.mode("overwrite").saveAsTable("demo.nonpartitioned_table22")
+#df.write \
+   # .format("orc") \
+    #.option("compression", "snappy") \
+   # .mode("overwrite") \
+   # .saveAsTable("demo.nonpartitioned_table2222")
